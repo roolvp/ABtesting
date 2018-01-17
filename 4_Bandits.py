@@ -27,33 +27,39 @@ class Bandit():
         self.b = 1
     def pullTrigger(self):
         x = np.random.random()
-        print(x > self.p)
-        return (x > self.p)
+        print(x < self.p)
+        return (x < self.p)
     def updateBeta(self,x):
         self.a += x
-        self.b -= x
-
+        self.b += 1 - x
 
 def ChooseBandit(Bandits):
     winner = []
     hihgest_value = 0
     for bandit in Bandits:
         print(bandit.p)
-        sample = beta.rvs(bandit.a, bandit.b)
+        sample = np.random.beta(bandit.a, bandit.b)
         if sample > hihgest_value:
+            hihgest_value = sample
             winner = bandit
-        bandit.updateBeta()
-    print(winner)
+    print("The winner is %s"%winner.p)
     return winner
 
-Banditsp = [0.1,0.4,0.6,0.8]
+Banditsp = [0.1,0.4,0.6,0.5]
 
-#how can we define multiple objects of the class bandit in a loop?
-#You initialize a list of Bandits
-Bandits = [Bandit(p) for p in Banditsp]
-    #Bandits[i] = i
-thewinner = ChooseBandit(Bandits)
-print(thewinner.p)
+Banditslist = [Bandit(p) for p in Banditsp]
 
 
+for i in range(0,1000):
+    testbandit = ChooseBandit(Banditslist)
+    testbandit.updateBeta(testbandit.pullTrigger())
+    print(testbandit.p)
+    print(testbandit.a)
+    print(testbandit.b)
 
+
+
+for i in Banditslist:
+    print("Bandit p: %s \t has Beta distribution with a = %s and b = %s"%(i.p,i.a,i.b))
+
+#To do: visualize distributions
