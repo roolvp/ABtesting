@@ -16,8 +16,13 @@
 #a is updated by summing 0 or 1, b is updated with 1 - x. B brings the probability to the left
 
 
+
+
+
 import numpy as np
+#for visualizing the Beta distributions
 from scipy.stats import beta
+import matplotlib.pyplot as plt
 
 
 class Bandit():
@@ -49,17 +54,43 @@ Banditsp = [0.1,0.4,0.6,0.5]
 
 Banditslist = [Bandit(p) for p in Banditsp]
 
+#Does the testing for a number of samples
+def runexperiment(Banditslist):
+    for i in range(0,1000):
+    #chooses bandit
+        testbandit = ChooseBandit(Banditslist)
+    #triggers bandit and updates its Beta distribution
+        testbandit.updateBeta(testbandit.pullTrigger())
+        if i%200 == 0:
+            plotbandits(Banditslist)
 
-for i in range(0,1000):
-    testbandit = ChooseBandit(Banditslist)
-    testbandit.updateBeta(testbandit.pullTrigger())
-    print(testbandit.p)
-    print(testbandit.a)
-    print(testbandit.b)
+
+def plotbandits(Banditslist):
+    for i in Banditslist:
+    #bring a set of samples
+        samples = np.linspace(0,1,200)
+    #bring the pdf
+    #plot the pdf and label it
+        plt.plot(samples,beta.pdf(samples,i.a,i.b),label="Bandit with p = %s"%i.p)
+#plot the lengend
+    plt.legend()
+#show all the pdfs
+    plt.show()
 
 
 
-for i in Banditslist:
-    print("Bandit p: %s \t has Beta distribution with a = %s and b = %s"%(i.p,i.a,i.b))
 
-#To do: visualize distributions
+
+#Visualize probability density functions of the Beta distribution
+
+if __name__ == '__main__':
+    runexperiment(Banditslist)
+    for i in Banditslist:
+        print("Bandit p: %s \t has Beta distribution with a = %s and b = %s"%(i.p,i.a,i.b))
+
+
+
+
+
+
+
